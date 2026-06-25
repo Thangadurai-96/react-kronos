@@ -15,7 +15,8 @@ export default function createStyledComponent(Component, rules, options) {
   }
 
   class StyledComponent extends React.Component {
-    componentWillMount() {
+    constructor(props) {
+      super(props)
       let uuid = this.props.instance ? this.props.instance : makeUUID()
       let _rules = typeof rules === 'function' ? rules(this.props, uuid) : rules
       let _options = typeof options === 'function'
@@ -26,55 +27,49 @@ export default function createStyledComponent(Component, rules, options) {
       this.uuid = uuid
     }
 
+    componentDidUpdate(prevProps) {
+      if (this.props !== prevProps) {
+        let _rules = typeof rules === 'function'
+          ? rules(this.props, this.uuid)
+          : rules
+        let _options = typeof options === 'function'
+          ? options(this.props, this.uuid)
+          : options
+
+        this.sheet.detach()
+        this.sheet = attach(_rules, _options)
+      }
+    }
+
     componentWillUnmount() {
       this.sheet.detach()
       this.sheet = null
     }
 
-    classSet(classNames) {
+    classSet = classNames => {
       return Object.keys(classNames)
-        .filter(function(className) {
-          return classNames[className]
-        })
-        .map(function(className) {
-          return this.sheet.classes[className] || className
-        })
+        .filter(className => classNames[className])
+        .map(className => this.sheet.classes[className] || className)
         .join(' ')
     }
 
     render() {
+      const { forwardedRef, ...rest } = this.props
       return (
         <Component
           instance={this.uuid}
-          ref={'kronos'}
+          ref={forwardedRef}
           classes={this.sheet.classes}
           classSet={this.classSet}
-          {...this.props}
+          {...rest}
         />
       )
     }
   }
 
-  // Support React Hot Loader
-  if (module.hot) {
-    class HotStyledComponent extends StyledComponent {
-      componentWillReceiveProps(nextProps) {
-        if (this.props !== nextProps) {
-          let _rules = typeof rules === 'function'
-            ? rules(nextProps, this.uuid)
-            : rules
-          let _options = typeof options === 'function'
-            ? options(nextProps, this.uuid)
-            : options
-
-          this.sheet.detach()
-          this.sheet = attach(_rules, _options)
-        }
-      }
-    }
-
-    return HotStyledComponent
+  function StyledComponentWithForwardedRef(props, ref) {
+    return <StyledComponent {...props} forwardedRef={ref} />
   }
 
-  return StyledComponent
+  return React.forwardRef(StyledComponentWithForwardedRef)
 }

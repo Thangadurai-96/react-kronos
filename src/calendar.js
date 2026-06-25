@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 
 import get from 'lodash/get'
 
@@ -17,6 +16,8 @@ import getStyle from './styles'
 class Calendar extends Component {
   constructor(props) {
     super(props)
+    this.selectedRef = React.createRef()
+    this.updateDimensions = this.updateDimensions.bind(this)
 
     this.state = {
       windowHeight: window.innerHeight,
@@ -39,12 +40,9 @@ class Calendar extends Component {
 
   static _isMounted = false
 
-  componentWillMount() {
-    window.addEventListener('resize', this.updateDimensions.bind(this))
-  }
-
   componentDidMount() {
     this._isMounted = true
+    window.addEventListener('resize', this.updateDimensions)
     this.scrollToHour()
     this.updateDimensions()
   }
@@ -57,7 +55,7 @@ class Calendar extends Component {
 
   componentWillUnmount() {
     this._isMounted = false
-    window.removeEventListener('resize', this.updateDimensions.bind(this))
+    window.removeEventListener('resize', this.updateDimensions)
   }
 
   updateDimensions() {
@@ -67,8 +65,8 @@ class Calendar extends Component {
   }
 
   scrollToHour() {
-    if (this.props.level == 'hours' && this.refs.selected) {
-      const selected = ReactDOM.findDOMNode(this.refs.selected)
+    if (this.props.level === 'hours' && this.selectedRef && this.selectedRef.current) {
+      const selected = this.selectedRef.current
       selected.parentNode.scrollTop = selected.offsetTop - 6
     }
   }
@@ -321,7 +319,7 @@ class Calendar extends Component {
               return (
                 <Cell
                   key={i}
-                  ref={cell.selected || cell.nearestBefore ? 'selected' : null}
+                  ref={cell.selected || cell.nearestBefore ? this.selectedRef : null}
                   label={cell.label}
                   level={level}
                   type={type}

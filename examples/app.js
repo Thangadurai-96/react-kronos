@@ -5,6 +5,9 @@ import Kronos from 'kronos'
 export default class App extends Component {
   constructor(props) {
     super(props)
+    this.uncontrolledRef = React.createRef()
+    this.controlledRef = React.createRef()
+
     this.state = {
       uncontrolledDatetime: Moment().toISOString(),
       controlledDatetime: Moment().toISOString(),
@@ -23,7 +26,9 @@ export default class App extends Component {
   }
 
   onClickButtonUncontrolled(e) {
-    this.refs.uncontrolled.refs.kronos.toggle()
+    if (this.uncontrolledRef.current && typeof this.uncontrolledRef.current.toggle === 'function') {
+      this.uncontrolledRef.current.toggle()
+    }
   }
 
   onClickButtonControlled(e) {
@@ -166,7 +171,7 @@ export default class App extends Component {
                 Toggle Visibility
               </button>
               <Kronos
-                ref="uncontrolled"
+                ref={this.uncontrolledRef}
                 date={this.state.uncontrolledDatetime}
                 onChangeDateTime={::this.onChangeUncontrolled}
                 min={minDate}
@@ -195,7 +200,7 @@ export default class App extends Component {
                 Toggle Visibility
               </button>
               <Kronos
-                ref="controlled"
+                ref={this.controlledRef}
                 date={this.state.controlledDatetime}
                 onChangeDateTime={::this.onChangeControlled}
                 min={minDate}

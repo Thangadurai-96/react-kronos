@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 import Moment from 'moment'
 
 import cn from 'classnames'
@@ -100,13 +99,15 @@ class Kronos extends Component {
 
   static above = false
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props != nextProps) {
-      this.validate(this.getDateTimeInput(nextProps).datetime, null, true)
-      this.setState({
-        datetime: this.getDateTimeInput(nextProps).datetime,
-        input: this.getDateTimeInput(nextProps).input,
-      })
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.date !== prevProps.date ||
+      this.props.time !== prevProps.time ||
+      this.props.format !== prevProps.format
+    ) {
+      const { datetime, input } = this.getDateTimeInput(this.props)
+      this.validate(datetime, null, true)
+      this.setState({ datetime, input })
     }
   }
 
@@ -303,7 +304,9 @@ class Kronos extends Component {
     let datetime = this.state.datetime || Moment()
 
     if (this.above) {
-      ReactDOM.findDOMNode(this._input).focus()
+      if (this._input && typeof this._input.focus === 'function') {
+        this._input.focus()
+      }
     } else if (this.props.closeOnBlur) {
       this.toggle(false)
       if (this.props.onBlur) this.props.onBlur(e)
