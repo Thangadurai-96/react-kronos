@@ -22,4 +22,6 @@ const Cell=React.forwardRef((props,ref)=>{
   )
 
 })
+
+export default Cell
     

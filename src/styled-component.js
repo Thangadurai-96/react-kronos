@@ -55,6 +55,8 @@ export default function createStyledComponent(Component, rules, options) {
 
     render() {
       const { forwardedRef, ...rest } = this.props
+      console.log('forwardedRef=', forwardedRef, typeof forwardedRef)
+
       return (
         <Component
           instance={this.uuid}
