@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node devServer.js",
     "build": "npm run clean && npm run build:lib && npm run build:umd && npm run build:examples",
-    "build:lib": "BABEL_ENV=production babel src -d lib",
-    "build:umd": "NODE_ENV=production webpack --config webpack.config.prod.js -p",
-    "build:examples": "NODE_ENV=production webpack --config examples/webpack.config.examples.js",
+    "build:lib": "cross-env BABEL_ENV=production babel src -d lib",
+    "build:umd": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js -p",
+    "build:examples": "cross-env NODE_ENV=production webpack --config examples/webpack.config.examples.js",
     "clean": "rimraf dist && rimraf lib && npm run clean:examples",
     "clean:examples": "rimraf examples/bundle.*",
     "push_examples": "./scripts/push_ghpages"
@@ -40,17 +40,19 @@
   },
   "homepage": "http://dubert.github.io/react-kronos",
   "devDependencies": {
-        "@babel/cli": "7.0.0-beta.40",
+    "@babel/cli": "7.0.0-beta.40",
     "@babel/core": "7.0.0-beta.40",
-    "@babel/register": "7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "7.0.0-beta.40",
+    "@babel/plugin-proposal-function-bind": "7.0.0-beta.40",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
     "@babel/plugin-transform-react-jsx": "7.0.0-beta.40",
     "@babel/polyfill": "7.0.0-beta.40",
     "@babel/preset-env": "7.0.0-beta.40",
     "@babel/preset-react": "7.0.0-beta.40",
-    "@babel/plugin-proposal-class-properties": "7.0.0-beta.40",
-    "@babel/plugin-proposal-function-bind": "7.0.0-beta.40",
+    "@babel/register": "7.0.0-beta.40",
     "babel-eslint": "8.2.1",
     "babel-loader": "8.0.0-beta.0",
+    "cross-env": "^10.1.0",
     "empty-module": "0.0.2",
     "express": "^4.16.2",
     "json-loader": "^0.5.7",
@@ -75,8 +77,8 @@
     "moment-range": "^2.2.0"
   },
   "peerDependencies": {
+    "lodash": "^4.17.5",
     "react": "^16.3.1 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^16.3.1 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "lodash": "^4.17.5"
+    "react-dom": "^16.3.1 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   }
 }
